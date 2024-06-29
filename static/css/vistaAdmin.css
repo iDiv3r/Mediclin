@@ -1,0 +1,19 @@
+.caja{
+    height: 650px;
+    overflow: auto;
+}
+
+table{
+    width: 100%;
+    table-layout: fixed;
+    min-width: 1000px;
+}
+
+thead th{
+    position: sticky;
+    top: 0;
+}
+
+th, td{
+    border-bottom: 1px solid #dddd;
+}
