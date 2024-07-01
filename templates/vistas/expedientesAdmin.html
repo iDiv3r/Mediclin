@@ -1,0 +1,193 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+
+<div class="my-1 d-flex justify-content-between">
+
+    <div>
+        <i class="bi bi-file-earmark-fill" style="font-size: 5vh;"></i>
+        <span class="fs-3 ms-2">Expedientes</span>
+    </div>
+    
+    <div class="">
+        <button type="button" class="btn text-white" data-bs-toggle="modal" data-bs-target="#CrearExpediente" style="background-color: rgb(102, 174, 84);">
+            Crear Expediente
+        </button>
+    
+    </div>
+</div>
+
+    <div>
+        <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" class="border border-top-0 border-2 ">#</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Paciente</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Fecha de Nacimiento</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Enfermedades Crónicas</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Alergias</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Antecedentes</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Fecha de Creación</th>
+                    <th scope="col" class="border border-top-0 border-2 "></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border border-top-0 border-2 align-middle">
+                    <td>123</td>
+                    <td>Emiliano Alexander Pérez San Luis</td>
+                    <td>01/07/2024</td>
+                    <td>asdasdas</td>
+                    <td>hqiuehqoueq</td>
+                    <td>hasdgjhagsd</td>
+                    <td>01/07/2024</td>
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"> Opciones</button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item text-primary" href="#" data-bs-toggle="modal" data-bs-target="#EditarExpediente">Editar</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+{% endblock%}
+
+{% block modal %}
+    
+    <!-- Modal Crear Expediente -->
+    <div class="modal fade" id="CrearExpediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-dark border-top-0 border-2">
+
+                <form action="">
+
+                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
+    
+                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
+                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Crear Receta</h1>
+                    </div>
+
+                    <div class="modal-body border-dark border-top-0 border-2">
+                        
+
+                        <div class="d-flex gap-5 mb-5 justify-content-between">
+                            
+                            <div class="w-50">
+                                <div class="input-group">
+                                    <input type="text" class="form-control col-5" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre del Paciente">
+                                </div>
+                                
+                                <div class="d-flex mt-5 justify-content-between gap-3">    
+                                    <div class="input-group ">
+                                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha de Nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-floating w-50">
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <label for="floatingTextarea2">Alergias</label>
+                            </div>
+                            
+                        </div>
+
+                        <div class="d-flex gap-5 mb-5 justify-content-between">
+                            
+                            <div class="form-floating w-50">
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <label for="floatingTextarea2">Enfermedades Crónicas</label>
+                            </div>
+
+                            <div class="form-floating w-50">
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <label for="floatingTextarea2">Antecedentes Familiares</label>
+                            </div>
+                            
+                        </div>
+
+                        <div class="flex-column text-center">
+                            <button class="btn text-white col-3" style="background-color: rgb(102, 174, 84);">Agregar</button>
+                            <button type="button" class="btn btn-danger text-white col-3 ms-5" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                        
+                    </div>
+                </form>
+                
+            
+            </div>
+        </div>
+    </div>
+    </div>
+
+    
+    <!-- Modal Editar Expediente -->
+    <div class="modal fade" id="EditarExpediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-dark border-top-0 border-2">
+
+                <form action="">
+
+                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
+    
+                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
+                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Crear Receta</h1>
+                    </div>
+
+                    <div class="modal-body border-dark border-top-0 border-2">
+                        
+
+                        <div class="d-flex gap-5 mb-5 justify-content-between">
+                            
+                            <div class="w-50">
+                                <div class="input-group">
+                                    <input type="text" class="form-control col-5" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre del Paciente">
+                                </div>
+                                
+                                <div class="d-flex mt-5 justify-content-between gap-3">    
+                                    <div class="input-group ">
+                                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha de Nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-floating w-50">
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <label for="floatingTextarea2">Alergias</label>
+                            </div>
+                            
+                        </div>
+
+                        <div class="d-flex gap-5 mb-5 justify-content-between">
+                            
+                            <div class="form-floating w-50">
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <label for="floatingTextarea2">Enfermedades Crónicas</label>
+                            </div>
+
+                            <div class="form-floating w-50">
+                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <label for="floatingTextarea2">Antecedentes Familiares</label>
+                            </div>
+                            
+                        </div>
+
+                        <div class="flex-column text-center">
+                            <button class="btn text-white col-3" style="background-color: rgb(7, 97, 149);">Finalizar</button>
+                            <button type="button" class="btn btn-danger text-white col-3 ms-5" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                        
+                    </div>
+                </form>
+                
+            
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
