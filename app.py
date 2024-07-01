@@ -25,7 +25,7 @@ def index():
 
 @app.route('/test')
 def test():
-    return render_template('modales/EditYElimUsuarios.html')
+    return render_template('modales/opcionesReceta.html')
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
