@@ -22,5 +22,10 @@ mysql = MySQL(app)
 def index():
     return render_template('login.html')
 
+
+@app.route('/test')
+def test():
+    return render_template('modales/EditYElimUsuarios.html')
+
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
