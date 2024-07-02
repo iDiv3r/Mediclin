@@ -2,6 +2,57 @@
 
 {% block content %}
 
+{%   with msg = get_flashed_messages()   %}
+
+    {%   if msg     %}
+
+        {%   for mensaje in msg %}
+
+            {% if mensaje == 'Success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>¡Éxito! &nbsp </strong> El Expediente se guardó corectamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            
+            {% elif mensaje == 'Error' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>¡Ocurrió un Error! &nbsp </strong> Error al guardar el Expediente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>  
+
+            {% elif mensaje == 'EditS' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>¡Éxito! &nbsp </strong> El Expediente se actualizó corectamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+            {% elif mensaje == 'EditE' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>¡Ocurrió un Error! &nbsp </strong> Error al actualizar el Expediente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div> 
+
+            {% elif mensaje == 'DeleteS' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>¡Éxito! &nbsp </strong> El Expediente se eliminó corectamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+            {% elif mensaje == 'DeleteE' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>¡Ocurrió un Error! &nbsp </strong> Error al eliminar el Expediente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>  
+
+            {% endif %}
+
+
+        {%   endfor     %}
+
+    {%   endif     %}
+
+{%   endwith     %}
+
 <div class="my-1 d-flex justify-content-between">
 
     <div>
@@ -33,25 +84,30 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="border border-top-0 border-2 align-middle">
-                    <td>123</td>
-                    <td>Emiliano Alexander Pérez San Luis</td>
-                    <td>01/07/2024</td>
-                    <td>asdasdas</td>
-                    <td>hqiuehqoueq</td>
-                    <td>hasdgjhagsd</td>
-                    <td>01/07/2024</td>
-                    <td class="text-center">
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"> Opciones</button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item text-primary" href="#" data-bs-toggle="modal" data-bs-target="#EditarExpediente">Editar</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
+                {% for ex in expedientes %}
+                    <tr class="border border-top-0 border-2 align-middle">
+                        <td>{{ex[0]}}</td>
+                        <td>{{ex[1]}}</td>
+                        <td>{{ex[2]}}</td>
+                        <td>{{ex[5]}}</td>
+                        <td>{{ex[4]}}</td>
+                        <td>{{ex[3]}}</td>
+                        <td>{{ex[6]}}</td>
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"> Opciones</button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item text-primary" href="#" data-bs-toggle="modal" data-bs-target="#EditarExpediente{{ex[0]}}">Editar</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#EliminarExpediente{{ex[0]}}">Eliminar</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -65,33 +121,33 @@
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content border-dark border-top-0 border-2">
 
-                <form action="">
+                <form action="/crearPaciente" method="POST">
 
                     <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
     
                     <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Crear Receta</h1>
+                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Crear Expediente</h1>
                     </div>
 
                     <div class="modal-body border-dark border-top-0 border-2">
-                        
-
                         <div class="d-flex gap-5 mb-5 justify-content-between">
                             
+                            <input name="txtIdMedico" type="text" hidden value="{{usuario[0]}}">
+
                             <div class="w-50">
                                 <div class="input-group">
-                                    <input type="text" class="form-control col-5" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre del Paciente">
+                                    <input name="txtNombre" type="text" class="form-control col-5" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre del Paciente">
                                 </div>
                                 
                                 <div class="d-flex mt-5 justify-content-between gap-3">    
                                     <div class="input-group ">
-                                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha de Nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
+                                        <input name="txtFechaN" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha de Nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <textarea name="txtAlergias" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
                                 <label for="floatingTextarea2">Alergias</label>
                             </div>
                             
@@ -100,94 +156,33 @@
                         <div class="d-flex gap-5 mb-5 justify-content-between">
                             
                             <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <textarea name="txtEnf" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
                                 <label for="floatingTextarea2">Enfermedades Crónicas</label>
                             </div>
 
                             <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <textarea name="txtAnt" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
                                 <label for="floatingTextarea2">Antecedentes Familiares</label>
                             </div>
                             
                         </div>
 
                         <div class="flex-column text-center">
-                            <button class="btn text-white col-3" style="background-color: rgb(102, 174, 84);">Agregar</button>
+                            <button type="submit" class="btn text-white col-3" style="background-color: rgb(102, 174, 84);">Agregar</button>
                             <button type="button" class="btn btn-danger text-white col-3 ms-5" data-bs-dismiss="modal">Cancelar</button>
                         </div>
                         
                     </div>
                 </form>
-                
-            
             </div>
         </div>
     </div>
-    </div>
 
-    
-    <!-- Modal Editar Expediente -->
-    <div class="modal fade" id="EditarExpediente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content border-dark border-top-0 border-2">
+    {% for ex in expedientes %}
+        
+        {% include 'modales/opcionesExpediente.html' %}
 
-                <form action="">
+    {% endfor %}
 
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
-    
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Crear Receta</h1>
-                    </div>
 
-                    <div class="modal-body border-dark border-top-0 border-2">
-                        
-
-                        <div class="d-flex gap-5 mb-5 justify-content-between">
-                            
-                            <div class="w-50">
-                                <div class="input-group">
-                                    <input type="text" class="form-control col-5" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre del Paciente">
-                                </div>
-                                
-                                <div class="d-flex mt-5 justify-content-between gap-3">    
-                                    <div class="input-group ">
-                                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha de Nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
-                                <label for="floatingTextarea2">Alergias</label>
-                            </div>
-                            
-                        </div>
-
-                        <div class="d-flex gap-5 mb-5 justify-content-between">
-                            
-                            <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
-                                <label for="floatingTextarea2">Enfermedades Crónicas</label>
-                            </div>
-
-                            <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
-                                <label for="floatingTextarea2">Antecedentes Familiares</label>
-                            </div>
-                            
-                        </div>
-
-                        <div class="flex-column text-center">
-                            <button class="btn text-white col-3" style="background-color: rgb(7, 97, 149);">Finalizar</button>
-                            <button type="button" class="btn btn-danger text-white col-3 ms-5" data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                        
-                    </div>
-                </form>
-                
-            
-            </div>
-        </div>
-    </div>
-    </div>
 {% endblock %}

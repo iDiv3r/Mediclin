@@ -1,172 +1,118 @@
-{% extends 'app.html'%}
+<!-- Modal Editar Usuario -->
+<div class="modal fade" id="EditarUsuario{{medico[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-dark border-top-0 border-2">
 
-{% block content %}
+            <form action="/editarUsuario" method="POST">
+
+                <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
+
+                <div class="modal-header justify-content-center border-dark border-top-0 border-2">
+                    <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Editar Usuario</h1>
+                </div>
+                <div class="modal-body border-dark border-top-0 border-2">
+
+                    <div class="d-flex gap-5 mb-5">
+                        
+                        <input type="text" name="txtIdMedico" hidden value="{{medico[0]}}">
+
+                        <div class="input-group">
+                            <input name="txtRFC" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC" value="{{medico[1]}}">
+                        </div>
+
+                        <div class="input-group ">
+                            <input name="txtCorreo" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Correo" value="{{medico[4]}}">
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-5 mb-5">
+
+                        <div class="input-group">
+                            <input name="txtNombreC" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre Completo" value="{{medico[2]}}">
+                        </div>
+
+                        <div class="input-group ">
+                            <input name="txtPass" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña" value="{{medico[5]}}">
+                        </div>
+                    </div>
+
+                    <div class="mb-5 w-50">
+                        <div class="input-group pe-4">  
+                            <input name="txtCedula" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Cédula" value="{{medico[3]}}">
+                        </div>                        
+                    </div>
+
+                    <div class="d-flex gap-5 mb-5">
+                        <div class="input-group">
+                            <select name="txtConsultorio" class="form-select form-select" aria-label="default select example">
+                                {% for consultorio in consultorios %}
+                                    {% if consultorio[1] == medico[7] %}
+                                        <option selected value="{{consultorio[0]}}">{{consultorio[1]}}</option>
+                                    {% else %}
+                                        <option value="{{consultorio[0]}}">{{consultorio[1]}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <select name="txtRol" class="form-select form-select" aria-label="default select example">
+                                {% if medico[6] == "0" %}
+                                    <option selected value="0">Usuario</option>
+                                    <option value="1">Administrador</option>
+                                {% elif medico[6] == "1" %}
+                                    <option value="0">Usuario</option>
+                                    <option selected value="1">Administrador</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex-column text-center mb-3 gap-3">
+                        <button class="btn text-white col-2" style="background-color: rgb(7, 97, 149);">Editar</button>
+                        <button type="button" class="btn btn-danger text-white col-2 mx-4   " data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                    
+                </div>
+            </form>
+            
         
-    <div class="modal fade" id="AgregarUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content border-dark border-top-0 border-2">
-
-                <form action="">
-
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
-    
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Agregar Usuario</h1>
-                    </div>
-                    <div class="modal-body border-dark border-top-0 border-2">
-    
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC">
-                            </div>
-    
-                            <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Correo">
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre Completo">
-                            </div>
-    
-                            <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña">
-                            </div>
-                        </div>
-    
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Cédula" >
-                            </div>
-    
-                            <div class="input-group ">
-                                
-                                <select class="form-select form-select" aria-label="default select example">
-                                    <option selected> Seleccionar Rol</option>
-                                    <option value="1">Usuario</option>
-                                    <option value="2">Administrador</option>
-                                </select>
-                            </div>
-    
-                        </div>
-    
-                        <div class="flex-column text-center mb-3 gap-3">
-                            <button class="btn text-white col-2" style="background-color: rgb(102, 174, 84);">Agregar</button>
-                            <button type="button" class="btn btn-danger text-white col-2 mx-4   " data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                        
-                    </div>
-                </form>
-                
-            
-            </div>
         </div>
     </div>
+</div>
 
-    
-    <!-- Modal Editar Usuario -->
-    <div class="modal fade" id="EditarUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content border-dark border-top-0 border-2">
+<!-- Modal Eliminar Usuario -->
+<div class="modal fade" id="EliminarUsuario{{medico[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content border-dark border-top-0 border-2">
 
-                <form action="">
+            <form action="/eliminarUsuario" method="POST">
 
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
-    
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Editar Usuario</h1>
+                <input name="txtIdMedico" type="text" value="{{medico[0]}}" hidden>
+
+                <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
+
+                <div class="modal-header justify-content-center border-dark border-top-0 border-2">
+                    <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Eliminar Usuario</h1>
+                </div>
+                <div class="modal-body border-dark border-top-0 border-2">
+                    
+                    <div class="flex-column text-center my-4 gap-3">
+                        <span>
+                            Se eliminará el usuario con RFC: {{medico[1]}}
+                            <br>
+                            ¿Está seguro?
+                        </span>
                     </div>
-                    <div class="modal-body border-dark border-top-0 border-2">
-    
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC">
-                            </div>
-    
-                            <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Correo">
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre Completo">
-                            </div>
-    
-                            <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña">
-                            </div>
-                        </div>
-    
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Cédula" >
-                            </div>
-    
-                            <div class="input-group ">
-                                
-                                <select class="form-select form-select" aria-label="default select example">
-                                    <option selected> Seleccionar Rol</option>
-                                    <option value="1">Usuario</option>
-                                    <option value="2">Administrador</option>
-                                </select>
-                            </div>
-    
-                        </div>
-    
-                        <div class="flex-column text-center mb-3 gap-3">
-                            <button class="btn text-white col-2" style="background-color: rgb(7, 97, 149);">Editar</button>
-                            <button type="button" class="btn btn-danger text-white col-2 mx-4   " data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                        
+                    
+
+                    <div class="flex-column text-center mb-3">
+                        <button type="submit" class="btn text-white mx-3" style="background-color: rgb(102, 174, 84);">Eliminar</button>
+                        <button type="button" class="btn btn-danger text-white mx-3"  data-bs-dismiss="modal">Cancelar</button>
                     </div>
-                </form>
-                
+                    
+                </div>
+            </form>
             
-            </div>
         </div>
     </div>
-
-    <!-- Modal Eliminar Usuario -->
-    <div class="modal fade" id="EliminarUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered ">
-            <div class="modal-content border-dark border-top-0 border-2">
-
-                <form action="">
-
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
-    
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Eliminar Usuario</h1>
-                    </div>
-                    <div class="modal-body border-dark border-top-0 border-2">
-                        
-                        <div class="flex-column text-center my-4 gap-3">
-                            <span>
-                                Se eliminará el usuario con RFC: xxxxxx
-                                <br>
-                                ¿Está seguro?
-                            </span>
-                        </div>
-                        
-    
-                        <div class="flex-column text-center mb-3">
-                            <button class="btn btn-danger text-white mx-3">Eliminar</button>
-                            <button type="button" class="btn text-white mx-3" style="background-color: rgb(102, 174, 84);" data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                        
-                    </div>
-                </form>
-                
-            
-            </div>
-        </div>
-    </div>
-{% endblock %}
+</div>

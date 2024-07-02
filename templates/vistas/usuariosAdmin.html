@@ -2,6 +2,61 @@
 
 {% block content %}
 
+<div class="">
+
+    {%   with msg = get_flashed_messages()   %}
+
+        {%   if msg     %}
+
+            {%   for mensaje in msg %}
+
+                {% if mensaje == 'Success' %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>¡Éxito! &nbsp </strong> El Usuario se guardó corectamente
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                
+                {% elif mensaje == 'Error' %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>¡Ocurrió un Error! &nbsp </strong> Error al guardar el Usuario.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>  
+
+                {% elif mensaje == 'EditS' %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>¡Éxito! &nbsp </strong> El Usuario se actualizó corectamente
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                {% elif mensaje == 'EditE' %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>¡Ocurrió un Error! &nbsp </strong> Error al actualizar el Usuario.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div> 
+
+                {% elif mensaje == 'DeleteS' %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>¡Éxito! &nbsp </strong> El Usuario se eliminó corectamente
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
+                {% elif mensaje == 'DeleteE' %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>¡Ocurrió un Error! &nbsp </strong> Error al eliminar el Usuario.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>  
+
+                {% endif %}
+
+
+            {%   endfor     %}
+
+        {%   endif     %}
+
+    {%   endwith     %}
+
+</div>
+
 <div class="my-1 d-flex justify-content-between">
 
     <div>
@@ -25,31 +80,48 @@
                     <th scope="col" class="border border-top-0 border-2 ">Nombre Completo</th>
                     <th scope="col" class="border border-top-0 border-2 ">Cédula</th>
                     <th scope="col" class="border border-top-0 border-2 ">Correo</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Contraseña</th>
                     <th scope="col" class="border border-top-0 border-2 ">Rol</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Consultorio</th>
                     <th scope="col" class="border border-top-0 border-2 "></th>
                 </tr>
             </thead>
             <tbody>
-                <tr class="border border-top-0 border-2 align-middle">
-                    <td>PWOEIRPWIER23123</td>
-                    <td>Emiliano Alexander Pérez San Luis</td>
-                    <td>1982371873123</td>
-                    <td>emiliano@gmail.com</td>
-                    <td>Admin</td>
-                    <td class="text-center">
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item text-primary" href="#" data-bs-toggle="modal" data-bs-target="#EditarUsuario">Editar</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#EliminarUsuario">Eliminar</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
+
+                {% for medico in medicos %}
+                    <tr class="border border-top-0 border-2 align-middle">
+                        <td>{{medico[1]}}</td>
+                        <td>{{medico[2]}}</td>
+                        <td>{{medico[3]}}</td>
+                        <td>{{medico[4]}}</td>
+                        <td>{{medico[5]}}</td>
+                        <td>
+                            {% if medico[6] == "0" %}
+                                Usuario
+                            {% else %}
+
+                                {% if medico[6] == "1"%}
+                                    Administrador
+                                {% endif%}
+
+                            {% endif %}
+                        </td>
+                        <td>{{medico[7]}}</td>
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item text-primary" href="#" data-bs-toggle="modal" data-bs-target="#EditarUsuario{{medico[0]}}">Editar</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#EliminarUsuario{{medico[0]}}">Eliminar</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -63,7 +135,7 @@
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content border-dark border-top-0 border-2">
 
-                <form action="">
+                <form action="/crearUsuario" method="POST">
 
                     <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
     
@@ -75,44 +147,53 @@
                         <div class="d-flex gap-5 mb-5">
     
                             <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC">
+                                <input name="txtRFC" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC">
                             </div>
     
                             <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Correo">
+                                <input name="txtCorreo" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Correo">
                             </div>
                         </div>
                         
                         <div class="d-flex gap-5 mb-5">
     
                             <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre Completo">
+                                <input name="txtNombreC" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre Completo">
                             </div>
     
                             <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña">
+                                <input name="txtPass" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña">
                             </div>
                         </div>
     
+                        <div class="mb-5 w-50">
+                            <div class="input-group pe-4">  
+                                <input name="txtCedula" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Cédula" >
+                            </div>                        
+                        </div>
+
                         <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Cédula" >
-                            </div>
-    
                             <div class="input-group ">
-                                
-                                <select class="form-select form-select" aria-label="default select example">
+                                <select name="txtConsultorio" class="form-select form-select" aria-label="default select example">
+                                    <option selected>Seleccionar Consultorio</option>
+
+                                    {% for consultorio in consultorios %}
+                                        <option value="{{consultorio[0]}}">{{consultorio[1]}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="input-group ">
+                                <select name="txtRol" class="form-select form-select" aria-label="default select example">
                                     <option selected>Seleccionar Rol</option>
-                                    <option value="1">Usuario</option>
-                                    <option value="2">Administrador</option>
+                                    <option value="0">Usuario</option>
+                                    <option value="1">Administrador</option>
                                 </select>
                             </div>
     
                         </div>
     
                         <div class="flex-column text-center mb-3 gap-3">
-                            <button class="btn text-white col-2" style="background-color: rgb(102, 174, 84);">Agregar</button>
+                            <button type="submit" class="btn text-white col-2" style="background-color: rgb(102, 174, 84);">Agregar</button>
                             <button type="button" class="btn btn-danger text-white col-2 mx-4   " data-bs-dismiss="modal">Cancelar</button>
                         </div>
                         
@@ -123,108 +204,11 @@
             </div>
         </div>
     </div>
+    
+    {% for medico in medicos %}
+        
+        {% include 'modales/opcionesUsuarios.html' %}
 
-    <!-- Modal Editar Usuario -->
-    <div class="modal fade" id="EditarUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content border-dark border-top-0 border-2">
-
-                <form action="">
-
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
-    
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Editar Usuario</h1>
-                    </div>
-                    <div class="modal-body border-dark border-top-0 border-2">
-    
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC">
-                            </div>
-    
-                            <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Correo">
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre Completo">
-                            </div>
-    
-                            <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña">
-                            </div>
-                        </div>
-    
-                        <div class="d-flex gap-5 mb-5">
-    
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Cédula" >
-                            </div>
-    
-                            <div class="input-group ">
-                                
-                                <select class="form-select form-select" aria-label="default select example">
-                                    <option selected> Seleccionar Rol</option>
-                                    <option value="1">Usuario</option>
-                                    <option value="2">Administrador</option>
-                                </select>
-                            </div>
-    
-                        </div>
-    
-                        <div class="flex-column text-center mb-3 gap-3">
-                            <button class="btn text-white col-2" style="background-color: rgb(7, 97, 149);">Editar</button>
-                            <button type="button" class="btn btn-danger text-white col-2 mx-4   " data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                        
-                    </div>
-                </form>
-                
-            
-            </div>
-        </div>
-    </div>
-
-    
-    <!-- Modal Eliminar Usuario -->
-    <div class="modal fade" id="EliminarUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered ">
-            <div class="modal-content border-dark border-top-0 border-2">
-
-                <form action="">
-
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
-    
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Eliminar Usuario</h1>
-                    </div>
-                    <div class="modal-body border-dark border-top-0 border-2">
-                        
-                        <div class="flex-column text-center my-4 gap-3">
-                            <span>
-                                Se eliminará el usuario con RFC: xxxxxx
-                                <br>
-                                ¿Está seguro?
-                            </span>
-                        </div>
-                        
-    
-                        <div class="flex-column text-center mb-3">
-                            <button class="btn btn-danger text-white mx-3">Eliminar</button>
-                            <button type="button" class="btn text-white mx-3" style="background-color: rgb(102, 174, 84);" data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                        
-                    </div>
-                </form>
-                
-            
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 
 {% endblock %}
