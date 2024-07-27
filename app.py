@@ -562,5 +562,17 @@ def eliminarExpediente():
         return redirect(url_for('ex'))
 
 
+# Error Handler #######################################################################################################################################
+@app.errorhandler(404)
+def paginano(e):
+    
+    flash('NoVer')
+    return redirect(url_for('index'))
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    flash('NoVer')
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':  
     app.run(port=3000, debug=True)
