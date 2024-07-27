@@ -2,6 +2,45 @@
 
 {% block content %}
 
+{%   with msg = get_flashed_messages()   %}
+
+    {%   if msg     %}
+
+        {%   for mensaje in msg %}
+
+            {% if mensaje == 'Success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>¡Éxito! &nbsp </strong> La cita se guardó corectamente
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            
+            {% elif mensaje == 'Error' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>¡Ocurrió un Error! &nbsp </strong> Error al guardar la cita.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>  
+                
+            {% elif mensaje == 'SuccessE' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>¡Éxito! &nbsp </strong> El estado de la cita se actualizó correctamente
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            {% elif mensaje == 'ErrorE' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>¡Ocurrió un Error! &nbsp </strong> Error al actualizar el estado de la cita
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div> 
+            
+            {% endif %}
+
+        {%   endfor     %}
+
+    {%   endif     %}
+
+{%   endwith     %}
+
+
 <div class="my-1 d-flex justify-content-between">
     <div>
         <i class="bi bi-calendar-week-fill" style="font-size: 5vh;"></i>
@@ -19,14 +58,10 @@
         <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
         <table class="table">
             <thead>
-                <tr>
+                <tr class="text-center">
                     <th scope="col" class="border border-top-0 border-2 ">#</th>
-                    <th scope="col" class="border border-top-0 border-2 ">Fecha</th>
+                    <th scope="col" class="border border-top-0 border-2 ">Fecha y Hora</th>
                     <th scope="col" class="border border-top-0 border-2 ">Paciente</th>
-                    <th scope="col" class="border border-top-0 border-2 ">Altura</th>
-                    <th scope="col" class="border border-top-0 border-2 ">Peso</th>
-                    <th scope="col" class="border border-top-0 border-2 ">LPM</th>
-                    <th scope="col" class="border border-top-0 border-2 ">Oxigenación</th>
                     <th scope="col" class="border border-top-0 border-2 ">Edad</th>
                     <th scope="col" class="border border-top-0 border-2 ">Consultorio</th>
                     <th scope="col" class="border border-top-0 border-2 ">Estado</th>
@@ -35,33 +70,39 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="border border-top-0 border-2 align-middle">
-                    <td>123</td>
-                    <td>01/07/2024</td>
-                    <td>Emiliano Alexander Pérez San Luis</td>
-                    <td>1.74 m</td>
-                    <td>76.3 kg</td>
-                    <td>60</td>
-                    <td>100</td>
-                    <td>20</td>
-                    <td>C-205</td>
-                    <td>En espera</td>
+
+                {% for cita in citas %}
+                <tr class="border border-top-0 border-2 align-middle text-center">
+                    <td>{{ cita[0] }}</td>
+                    <td>{{ cita[1] }} &nbsp;&nbsp; {{ cita[2] }}</td>
+                    <td>{{ cita[14] }}</td>
+                    <td>{{ cita[9] }} </td>
+                    <td>{{ cita[15] }}</td>
+                    {% if cita[17] == 1 %}
+                        <td style="color: rgb(7, 97, 149);">En espera </td>
+                    {% elif cita[17] == 2 %}
+                        <td style="color: rgb(102, 174, 84);">Finalizada</td>
+                    {% elif cita[17] == 3 %}
+                        <td class="text-danger">Cancelada</td>
+                    {% endif %}
                     <td>
-                        <a class="" href="" data-bs-toggle="modal" data-bs-target="#VerReceta">
-                            Receta
+                        <a class="" href="" data-bs-toggle="modal" data-bs-target="#VerReceta{{ cita[0] }}">
+                            Ver Receta
                         </a>
-                    </td>
+                    </td>   
                     <td class="text-center">
                         <div class="dropdown">
                             <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones</button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item text-primary" href="#" data-bs-toggle="modal" data-bs-target="#EditarEstado">Editar Estado</a>
+                                    <a class="dropdown-item text-primary" href="#" data-bs-toggle="modal" data-bs-target="#EditarEstado{{ cita[0] }}">Editar Estado</a>
                                 </li>
                             </ul>
                         </div>
                     </td>
                 </tr>
+
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -74,7 +115,7 @@
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content border-dark border-top-0 border-2">
 
-                <form action="">
+                <form action="/registrarCita" method="POST">
 
                     <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
 
@@ -85,24 +126,30 @@
 
                         <div class="d-flex gap-5 my-3">
 
-                            <div class="input-group">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Número">
+                            <div class="input-group ">
+                                <input required name="txtFecha" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
                             </div>
 
                             <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
+                                <input required name="txtHora" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Hora" onfocus="(this.type='time')" onblur="(this.type='text')" id="time">
                             </div>
 
                             <div class="input-group ">
-                                <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Saturación O/G">
+                                <input required name="txtSat" type="number" step="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Saturación O/G">
+                            </div>
+
+                            <div class="input-group ">
+                                <input required name="txtGlucosa" type="number" step="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Glucosa">
                             </div>
                             
                             <div class="input-group ">
                                 
-                                <select class="form-select form-select" aria-label="default select example">
+                                <select required name="txtCon" class="form-select form-select" aria-label="default select example">
                                     <option selected> Consultorio</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
+
+                                    {% for consultorio in consultorios %}
+                                        <option value="{{consultorio[0]}}">{{consultorio[1]}}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             
@@ -113,26 +160,40 @@
                             
                             <div class="w-50">
                                 <div class="input-group">
-                                    <input type="text" class="form-control col-5" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre del Paciente">
+                                    
+                                    <select required name="txtPac" class="form-select form-select" aria-label="default select example">
+                                        <option selected>Nombre Del Paciente</option>
+    
+                                        {% for paciente in pacientes %}
+                                            <option value="{{paciente[0]}}">{{paciente[1]}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                                 
-                                <div class="d-flex mt-5 justify-content-between gap-3">    
+                                <div class="d-flex mt-5 justify-content-between gap-3">
+
                                     <div class="input-group ">
-                                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Altura (m)">
+                                        <input required name="txtAlt" type="number" step="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Altura (m)">
                                     </div>
         
                                     <div class="input-group ">
-                                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Peso (Kg)">
+                                        <input required name="txtPeso" type="number"  step="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Peso (Kg)">
+                                    </div>
+                                    
+                                    <div class="input-group ">
+                                        <input required name="txtTemp" type="number"  step="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Temperatura (C)">
                                     </div>
 
                                     <div class="input-group ">
-                                        <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="LPM">
+                                        <input required name="txtLpm" type="number" step="0.01" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="LPM">
                                     </div>
+
                                 </div>
+                                
                             </div>
                             
                             <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <textarea required name="txtSin" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
                                 <label for="floatingTextarea2">Síntomas</label>
                             </div>
                             
@@ -141,12 +202,12 @@
                         <div class="d-flex gap-5 mb-5 justify-content-between">
                             
                             <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <textarea required name="txtDiagnostico" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
                                 <label for="floatingTextarea2">Diagnóstico</label>
                             </div>
 
                             <div class="form-floating w-50">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <textarea required name="txtInd" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
                                 <label for="floatingTextarea2">Indicaciones</label>
                             </div>
                             
@@ -154,7 +215,7 @@
 
                         <div class="d-flex mb-3 justify-content-between">
                             <div class="form-floating w-50 me-5">
-                                <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
+                                <textarea required name="txtEstudios" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
                                 <label for="floatingTextarea2">Estudios Necesarios</label>
                             </div>
                             
@@ -165,8 +226,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        
                     </div>
                 </form>
                 
@@ -175,143 +234,13 @@
         </div>
     </div>
 
-    <!-- Modal Ver Receta -->
-    <div class="modal fade" id="VerReceta" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content border-dark border-top-0 border-2">
 
-                <form action="">
+{% for cita in citas %}
 
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
+    {% include 'modales/opcionesReceta.html' %}
 
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Crear Receta</h1>
-                    </div>
-                    <div class="modal-body border-dark border-top-0 border-2">
+{% endfor %}
 
-                        <div class="d-flex gap-5 my-3">
 
-                            <div class="input-group">
-                                <input disabled type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Número">
-                            </div>
 
-                            <div class="input-group ">
-                                <input disabled type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Fecha" onfocus="(this.type='date')" onblur="(this.type='text')" id="date">
-                            </div>
-
-                            <div class="input-group ">
-                                <input disabled type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Saturación O/G">
-                            </div>
-                            
-                            <div class="input-group ">
-                                
-                                <select  disabled class="form-select form-select" aria-label="default select example">
-                                    <option selected> Consultorio</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                </select>
-                            </div>
-                            
-                        </div>
-                        
-
-                        <div class="d-flex gap-5 mb-5 justify-content-between">
-                            
-                            <div class="w-50">
-                                <div class="input-group">
-                                    <input disabled type="text" class="form-control col-5" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Nombre del Paciente">
-                                </div>
-                                
-                                <div class="d-flex mt-5 justify-content-between gap-3">    
-                                    <div class="input-group ">
-                                        <input disabled type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Altura (m)">
-                                    </div>
-        
-                                    <div class="input-group ">
-                                        <input disabled type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Peso (Kg)">
-                                    </div>
-
-                                    <div class="input-group ">
-                                        <input disabled type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="LPM">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-floating w-50">
-                                <textarea disabled class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
-                                <label for="floatingTextarea2">Síntomas</label>
-                            </div>
-                            
-                        </div>
-
-                        <div class="d-flex gap-5 mb-5 justify-content-between">
-                            
-                            <div class="form-floating w-50">
-                                <textarea disabled class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
-                                <label for="floatingTextarea2">Diagnóstico</label>
-                            </div>
-
-                            <div class="form-floating w-50">
-                                <textarea disabled class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
-                                <label for="floatingTextarea2">Indicaciones</label>
-                            </div>
-                            
-                        </div>
-
-                        <div class="d-flex mb-3 justify-content-between">
-                            <div class="form-floating w-50 me-5">
-                                <textarea disabled class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 125px"></textarea>
-                                <label for="floatingTextarea2">Estudios Necesarios</label>
-                            </div>
-                            
-                            <div class="w-50 position-relative">
-                                <div class="flex-column text-end position-absolute bottom-0 end-0 w-100">
-                                    <button class="btn text-white col-3 btn-warning">Descargar</button>
-                                    <button type="button" class="btn btn-danger text-white col-3 ms-5" data-bs-dismiss="modal">Salir</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Editar Estado Cita -->
-    <div class="modal fade" id="EditarEstado" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered ">
-            <div class="modal-content border-dark border-top-0 border-2">
-
-                <form action="">
-
-                    <div class="" style="background-color: rgb(60, 141, 188); height:1vh;  border-radius:1vh 1vh 0vh 0vh"></div>
-    
-                    <div class="modal-header justify-content-center border-dark border-top-0 border-2">
-                        <h1 style="font-family: inria sans;" class="modal-title fs-5" id="staticBackdropLabel">Editar Estado Cita</h1>
-                    </div>
-                    <div class="modal-body border-dark border-top-0 border-2">
-                        
-                        <div class="flex-column text-center my-4 gap-3">
-                            <select class="form-select form-select" aria-label="default select example">
-                                <option selected>Seleccionar Estado</option>
-                                <option value="1" style="color: rgb(7, 97, 149);">En espera</option>
-                                <option value="2" style="color: rgb(102, 174, 84);">Finalizada</option>
-                                <option value="3" class="text-danger">Cancelada</option>
-                            </select>
-                        </div>
-    
-                        <div class="flex-column text-center mb-3">
-                            <button class="btn text-white mx-3" style="background-color: rgb(7, 97, 149);">Actualizar</button>
-                            <button type="button" class="btn btn-danger text-white mx-3" data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                        
-                    </div>
-                </form>
-                
-            
-            </div>
-        </div>
-    </div>
 {% endblock %}

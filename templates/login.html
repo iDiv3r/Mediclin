@@ -7,9 +7,46 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
-    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Login</title>
 </head>
 <body style="background-color: rgb(236, 240, 245);">
+    {%   with msg = get_flashed_messages()   %}
+
+        {%   if msg     %}
+
+            {%   for mensaje in msg %}
+
+                {% if mensaje == 'NoVer' %}
+
+                    <script>
+
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Acceso Denegado",
+                            text: "¡Inicia sesión para poder acceder!"
+                        });
+
+                    </script>
+                
+                {% elif mensaje == 'Error' %}
+                    
+                    <script>
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "¡Ocurrió un error!",
+                            text: "Verifica tus datos de inicio de sesión"
+                        });
+
+                    </script>
+                {% endif %}
+
+            {%   endfor     %}
+
+        {%   endif     %}
+
+    {%   endwith     %}
     
     <div class="position-absolute top-50 start-50 translate-middle">
         
@@ -30,10 +67,10 @@
                 <div class="border border-top-0 rounded-bottom border-2 border-gray-900 border-1 w-100" style="width: 32vh; background-color: white;">
                     <div class="">
                         <div class="input-group my-4">
-                            <input name="txtRFC" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC" style="font-family: inria sans;">
+                            <input required oninvalid="this.setCustomValidity('Por favor escribir un RFC')" oninput="this.setCustomValidity('')" name="txtRFC" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="RFC" style="font-family: inria sans;">
                         </div>
                         <div class="input-group my-4">
-                            <input name="txtPass" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña" style="font-family: inria sans;">
+                            <input required oninvalid="this.setCustomValidity('Por favor escribir su contraseña')" oninput="this.setCustomValidity('')" name="txtPass" type="password" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Contraseña" style="font-family: inria sans;">
                         </div>
                         
                         <div class="flex-column text-center mb-3">

@@ -2,6 +2,35 @@
 
 {% block content %}
 
-    <h1 class="text-info position-absolute top-50 start-50 translate-middle">Bienvenido a Mediclin {{usuario[1]}}</h1>
+
+    {%   with msg = get_flashed_messages()   %}
+
+        {%   if msg     %}
+
+            {%   for mensaje in msg %}
+
+                {% if mensaje == 'SuccIni' %}
+
+                    <script>
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "!Verificación Exitosa!",
+                            text: "Disfruta de tu estancia en la aplicación"
+                        });
+
+                    </script>
+                
+                {% endif %}
+                
+            {%   endfor     %}
+
+        {%   endif     %}
+
+    {%   endwith     %}
+    
+    <span class="text-info fs-1">¡Bienvenido a Mediclin!</span>
+    <br>
+    <span class="text-info fs-2"> {{usuario[1]}} </span>
 
 {% endblock %}

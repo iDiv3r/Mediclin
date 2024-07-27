@@ -27,9 +27,9 @@ create table pacientes(
 	id int primary key auto_increment,
     nombreCompleto varchar(150) not null,
     fechaNacimiento date not null,
-    antecedentes text not null,
-    alergias text not null,
-    enfermedades text not null,
+    antecedentes text,
+    alergias text,
+    enfermedades text,
     fechaCreacion datetime not null,
     id_medico int not null,
     
@@ -45,9 +45,11 @@ create table expedientes(
     foreign key (id_paciente) references pacientes(id)
 );
 
+
 create table citas(
 	id int primary key auto_increment,
-    fecha datetime not null,
+    fecha date not null,
+    hora time not null,
     peso decimal(6,3) not null,
     altura decimal(4,2) not null,
     temperatura decimal(4,2) not null,
@@ -59,9 +61,12 @@ create table citas(
     diagnostico text not null,
     tratamiento text not null,
     estudios text not null,
-    id_expediente int not null,
+    id_consultorio int not null,
+    id_paciente int not null,
+    nombrePDF text not null,
     
-    foreign key (id_expediente) references expedientes(id)
+    foreign key (id_paciente) references pacientes(id),
+    foreign key (id_consultorio) references consultorios(id)
 );
 
 insert into consultorios(nombre)
@@ -73,3 +78,6 @@ values
 ('C1'),
 ('C2');
 
+insert into medicos(RFC,nombreCompleto,cedula,correo,pass,rol,id_consultorio)
+values
+('admin','admin','admin','admin@gmail.com','admin123','1',1);
