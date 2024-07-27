@@ -48,6 +48,42 @@
     </div>
     
     <div class="">
+
+        <div class="btn-group me-2">
+
+            <button class="btn btn-secondary btn-sm" type="button">
+                Filtrar
+                <i class="bi bi-funnel-fill ms-2"></i>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+
+            <ul class="dropdown-menu">
+                
+                <form action="/filtrarCitas" method="POST">
+
+                    <input type="number" hidden value="{{ usuario[0] }}" name="txtIdUsuario">
+    
+                    <li class="dropdown-item">
+                        <input type="text" class="form-control" placeholder="Paciente" name="txtPacienteFiltro">
+                    </li>
+    
+                    <li class="dropdown-item">
+                        <input type="text" class="form-control" placeholder="Fecha"  name="txtFechaFiltro" onfocus="(this.type='date')" onblur="(this.type='text')" id="dateFilter">
+                    </li>
+    
+                    <hr class="dropdown-divider">
+    
+                    <li>
+                        <button class="dropdown-item text-info" type="submit" >Filtrar</button>
+                    </li>
+
+                </form>
+            </ul>
+        </div>
+
         <button type="button" class="btn text-white" data-bs-toggle="modal" data-bs-target="#CrearReceta" style="background-color: rgb(102, 174, 84);">
             Crear Cita
         </button>

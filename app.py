@@ -27,17 +27,12 @@ def verificarVacios(palabra):
     letras = string.ascii_letters
     numeros = string.digits
     
-    numL = 0
-    
     for caracter in str(palabra):
+        
         if caracter in letras or caracter in numeros:
-            numL += 1
-            break
+            return palabra
     
-    if numL > 0:
-        return False
-    else:
-        return True
+    return True
 
 def verificarUsuario():
     try:
@@ -126,6 +121,8 @@ def rec():
         return redirect(url_for('index'))
     
     return render_template('vistas/recetasAdmin.html',usuario=usu)
+
+# USUARIOS ########################################################################################################################################################################
 
 # index Usuarios ----------------------------------------------------------------------------------------------------------------------------------------------
 @app.route('/usu')
@@ -237,7 +234,7 @@ def eliminarUsuario():
         flash('DeleteE')
         return redirect(url_for('usu'))
 
-# Citas ############################################################################################################################################################
+# Citas ########################################################################################################################################################################
 
 # index Citas ----------------------------------------------------------------------------------------------------------------------------------------------
 @app.route('/citas')
@@ -375,7 +372,90 @@ def actualizarEstadoCita():
         print(e)
         flash('ErrorE')
         return redirect(url_for('citas'))
+
+
+# Filtrar Citas --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@app.route('/filtrarCitas', methods=['POST'])
+def filtrarCitas():
     
+    idA = request.form['txtIdUsuario']
+    n = verificarVacios(request.form['txtPacienteFiltro'])
+    f = verificarVacios(request.form['txtFechaFiltro'])
+    
+    nombrePaciente = None if n == True else n
+    fecha = None if f == True else f
+    
+    try:
+        
+        cursor = mysql.connection.cursor()
+        cursor.execute('select * from consultorios')
+        listaConsultorios = cursor.fetchall()
+        
+        cursor = mysql.connection.cursor()
+        cursor.execute('select * from pacientes where id_medico = %s',(idA))
+        listaExpedientes = cursor.fetchall()
+        
+        usu = verificarUsuario()    
+        
+        if nombrePaciente and fecha:
+            
+            cursor = mysql.connection.cursor()
+            cursor.execute(''' 
+                            select c.id,c.fecha,c.hora,c.peso,c.altura,c.temperatura,c.bpm,c.oxigenacion,c.glucosa,c.edad,c.sintomas,c.diagnostico,c.tratamiento,c.estudios,
+                            p.nombreCompleto,co.nombre,c.nombrePDF,c.estado 
+                            from citas c 
+                            inner join pacientes p on p.id = c.id_paciente 
+                            inner join consultorios co on co.id = c.id_consultorio 
+                            where p.id_medico = %s and c.fecha = %s and p.nombreCompleto = %s
+                            ''',(idA,fecha,nombrePaciente))
+            citasFiltradas = cursor.fetchall()
+        
+            return render_template('vistas/citasAdmin.html',consultorios=listaConsultorios,pacientes=listaExpedientes,citas=citasFiltradas,usuario=usu)
+        
+        elif nombrePaciente and not fecha:
+            
+            cursor = mysql.connection.cursor()
+            cursor.execute(''' 
+                            select c.id,c.fecha,c.hora,c.peso,c.altura,c.temperatura,c.bpm,c.oxigenacion,c.glucosa,c.edad,c.sintomas,c.diagnostico,c.tratamiento,c.estudios,
+                            p.nombreCompleto,co.nombre,c.nombrePDF,c.estado 
+                            from citas c 
+                            inner join pacientes p on p.id = c.id_paciente 
+                            inner join consultorios co on co.id = c.id_consultorio 
+                            where p.id_medico = %s and p.nombreCompleto = %s
+                            ''',(idA,nombrePaciente))
+            
+            citasFiltradas = cursor.fetchall()
+            
+            return render_template('vistas/citasAdmin.html',consultorios=listaConsultorios,pacientes=listaExpedientes,citas=citasFiltradas,usuario=usu)
+        
+        elif not nombrePaciente and fecha:
+            
+            cursor = mysql.connection.cursor()
+            cursor.execute(''' 
+                            select c.id,c.fecha,c.hora,c.peso,c.altura,c.temperatura,c.bpm,c.oxigenacion,c.glucosa,c.edad,c.sintomas,c.diagnostico,c.tratamiento,c.estudios,
+                            p.nombreCompleto,co.nombre,c.nombrePDF,c.estado 
+                            from citas c 
+                            inner join pacientes p on p.id = c.id_paciente 
+                            inner join consultorios co on co.id = c.id_consultorio 
+                            where p.id_medico = %s and c.fecha = %s
+                            ''',(idA,fecha))
+            
+            citasFiltradas = cursor.fetchall()
+        
+            return render_template('vistas/citasAdmin.html',consultorios=listaConsultorios,pacientes=listaExpedientes,citas=citasFiltradas,usuario=usu)
+        
+        elif not nombrePaciente and not fecha:
+            
+            return redirect(url_for('citas'))
+        
+            
+    except Exception as e:
+        print(e)
+        return redirect(url_for('citas'))
+        
+
+
 # EXPEDIENTES ################################################################################################################################################################################
     
 # index Expedientes ----------------------------------------------------------------------------------------------------------------------------------------------
