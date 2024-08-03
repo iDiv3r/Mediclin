@@ -2,10 +2,10 @@ from flask import Flask, request, render_template, url_for, redirect, flash, mak
 from flask_mysqldb import MySQL
 from datetime import datetime,date
 from generadorRecetas import *
-import json
 import string
 import math
 import os
+import bcrypt
 
 app = Flask(__name__)
 
@@ -38,10 +38,11 @@ def verificarUsuario():
     try:
         idA = request.cookies.get('AuthId')
         name = request.cookies.get('AuthName')
+        rol = request.cookies.get('AuthRol')
         usuario = []
         
-        if idA and name:
-            usuario = [idA, name]
+        if idA and name and rol:
+            usuario = [idA, name,rol]
             return usuario
         else:
             return None
@@ -49,6 +50,15 @@ def verificarUsuario():
     except:
         flash('Error')
         return redirect(url_for('index'))
+
+def encriptaPass(cont):
+    passw = cont
+    passw = passw.encode()
+    
+    sal = bcrypt.gensalt()
+    passHash = bcrypt.hashpw(passw,sal)
+    
+    return passHash
 
 # index Login ----------------------------------------------------------------------------------------------------------------------------------------------
 @app.route('/')
@@ -65,17 +75,31 @@ def login():
     
     try:
         cursor = mysql.connection.cursor()
-        cursor.execute('select id,nombreCompleto from medicos where RFC = %s and pass = %s', (rfc, passw))
+        cursor.execute('select id,nombreCompleto,rol,hashP from medicos where RFC = %s and RFC = %s', (rfc,rfc))
         resultado = cursor.fetchone()
         
         if resultado:
-            response = make_response(redirect(url_for('home')))
-            response.set_cookie('AuthId', str(resultado[0]))
-            response.set_cookie('AuthName', resultado[1])
             
-            flash('SuccIni')
+            passE = passw.encode()
+            hashBD = resultado[3]
+            hashE = hashBD.encode()
             
-            return response
+            if bcrypt.checkpw(passE, hashE):
+                
+                response = make_response(redirect(url_for('home')))
+                response.set_cookie('AuthId', str(resultado[0]))
+                response.set_cookie('AuthName', resultado[1])
+                response.set_cookie('AuthRol', resultado[2])
+                
+                flash('SuccIni')
+                
+                return response
+                
+            else:
+                
+                flash('Error')
+                return render_template('login.html')
+            
         else:
             flash('Error')
             return render_template('login.html')
@@ -103,6 +127,7 @@ def cerrarSesion():
         response = make_response(redirect(url_for('index')))
         response.delete_cookie('AuthId')
         response.delete_cookie('AuthName')
+        response.delete_cookie('SuthRol')
         return response
         
     except Exception as e:
@@ -134,9 +159,12 @@ def usu():
         if not usu:
             flash('NoVer')
             return redirect(url_for('index'))
+        else:
+            if usu[2] == '0':
+                return redirect(url_for('home'))
         
         cursor = mysql.connection.cursor()
-        cursor.execute('select medicos.id,medicos.RFC,medicos.nombreCompleto,medicos.cedula,medicos.correo,medicos.pass,medicos.rol,consultorios.nombre from medicos inner join consultorios on medicos.id_consultorio = consultorios.id')
+        cursor.execute('select medicos.id,medicos.RFC,medicos.nombreCompleto,medicos.cedula,medicos.correo,medicos.hashP,medicos.rol,consultorios.nombre from medicos inner join consultorios on medicos.id_consultorio = consultorios.id')
         listaMedicos = cursor.fetchall()
         
         cursor = mysql.connection.cursor()
@@ -172,14 +200,17 @@ def crearUsuario():
             return redirect(url_for('usu'))
     
     try:
+        hashP = encriptaPass(Pass)
+        
         cursor = mysql.connection.cursor()
-        cursor.execute('insert into medicos(RFC,nombreCompleto,cedula,correo,pass,rol,id_consultorio ) values (%s,%s,%s,%s,%s,%s,%s)', (Rfc,NombreC,Cedula,Correo,Pass,Rol,Consultorio))
+        cursor.execute('insert into medicos(RFC,nombreCompleto,cedula,correo,hashP,rol,id_consultorio ) values (%s,%s,%s,%s,%s,%s,%s)', (Rfc,NombreC,Cedula,Correo,hashP,Rol,Consultorio))
         mysql.connection.commit()
 
         flash('Success')
         return redirect(url_for('usu'))
         
-    except:
+    except Exception as e:
+        print(e)
         flash('Error')
         return redirect(url_for('usu'))
 
@@ -205,8 +236,10 @@ def editarUsuario():
             return redirect(url_for('usu'))
     
     try:
+        hashP = encriptaPass(Pass)
+        
         cursor = mysql.connection.cursor()
-        cursor.execute('update medicos set RFC = %s , nombreCompleto = %s , cedula = %s , correo = %s , pass = %s , rol = %s , id_consultorio = %s where id = %s ',(Rfc,NombreC,Cedula,Correo,Pass,Rol,Consultorio,IdMedico))
+        cursor.execute('update medicos set RFC = %s , nombreCompleto = %s , cedula = %s , correo = %s , hashP = %s , rol = %s , id_consultorio = %s where id = %s ',(Rfc,NombreC,Cedula,Correo,hashP,Rol,Consultorio,IdMedico))
         mysql.connection.commit()
 
         flash('EditS')
@@ -265,7 +298,8 @@ def citas():
         
         return render_template('vistas/citasAdmin.html',consultorios=listaConsultorios,pacientes=listaExpedientes,citas=listaCitas,usuario=usu)
     
-    except:
+    except Exception as e:
+        print(e)
         return render_template('vistas/citasAdmin.html',consultorios=[],usuario=usu)
 
 
@@ -320,6 +354,16 @@ def registrarCita():
         cursor.execute('select nombreCompleto from pacientes where id = %s',[idPaciente])
         nombrePaciente = cursor.fetchone()
         
+        cursor = mysql.connection.cursor()
+        cursor.execute('''
+                        select m.nombreCompleto, m.cedula
+                        from medicos m 
+                        inner join pacientes p on p.id_medico = m.id
+                        where p.id = %s;
+                        ''',
+                        [idPaciente])
+        doctor = cursor.fetchone()
+        
         
         datos = [fecha,hora,nombreConsultorio[0],nombrePaciente[0],altura,peso,edad,temp,saturacion,glucosa,lpm,sintomas,diagnostico,tratamiento,estudios]
         
@@ -330,14 +374,36 @@ def registrarCita():
                 flash('Error')
                 return redirect(url_for('citas'))
         
-        genPDF = GeneradorRecetas()
         
-        genPDF.add_page()
-        genPDF.chapter_body(datos)
+        datosPDF = {
+            'Fecha': str(fecha),
+            'Hora': str(hora),
+            'Consultorio': str(nombreConsultorio[0]),
+            'Paciente': str(nombrePaciente[0]),
+            'Altura': str(altura),
+            'Peso': str(peso),
+            'Edad': str(edad),
+            'Temperatura': str(temp),
+            'Oxigenacion': str(saturacion),
+            'Glucosa': str(glucosa),
+            'BPM': str(lpm),
+            'Sintomas': str(sintomas),
+            'Diagnostico': str(diagnostico),
+            'Tratamiento': str(tratamiento),
+            'Estudios': str(estudios),
+            'Doctor': str(doctor[0]),
+            'Cedula': str(doctor[1])
+        }
+        
+        pdf = GeneradorRecetas(datosDoctor=datosPDF)
+        
+        pdf.add_page(orientation='L')
+        
+        pdf.chapter_body()
         
         rutaPDF = os.path.join("static/PDFs/", nombreArchivo)
         
-        genPDF.output(rutaPDF)
+        pdf.output(rutaPDF)
         
         cursor = mysql.connection.cursor()
         cursor.execute('insert into citas(fecha,hora,peso,altura,temperatura,bpm,oxigenacion,glucosa,edad,sintomas,diagnostico,tratamiento,estudios,id_consultorio,id_paciente,nombrePDF,estado) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (fecha,hora,peso,altura,temp,lpm,saturacion,glucosa,edad,sintomas,diagnostico,tratamiento,estudios,idConsultorio,idPaciente,nombreArchivo,1))
@@ -566,13 +632,13 @@ def eliminarExpediente():
 @app.errorhandler(404)
 def paginano(e):
     
-    flash('NoVer')
-    return redirect(url_for('index'))
+    flash('Error404')
+    return redirect(url_for('home'))
 
 @app.errorhandler(405)
 def method_not_allowed(e):
-    flash('NoVer')
-    return redirect(url_for('index'))
+    flash('ErrorMetodo')
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':  
     app.run(port=3000, debug=True)

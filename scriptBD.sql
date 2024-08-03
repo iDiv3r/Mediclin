@@ -15,7 +15,7 @@ create table medicos(
     nombreCompleto varchar(150) not null,
     cedula varchar(30) not null,
     correo varchar(50) not null,
-    pass varchar(50) not null,
+    hashP varchar(255) not null,
     rol varchar(20) not null,
     id_consultorio int not null,
     
@@ -33,7 +33,7 @@ create table pacientes(
     fechaCreacion datetime not null,
     id_medico int not null,
     
-    foreign key (id_medico) references medicos(id)
+    foreign key (id_medico) references medicos(id) on delete cascade
 );
 
 create table expedientes(
@@ -42,7 +42,7 @@ create table expedientes(
     fechaCreacion datetime not null,
     id_paciente int not null,
     
-    foreign key (id_paciente) references pacientes(id)
+    foreign key (id_paciente) references pacientes(id) on delete cascade
 );
 
 
@@ -64,8 +64,9 @@ create table citas(
     id_consultorio int not null,
     id_paciente int not null,
     nombrePDF text not null,
+    estado tinyint not null,
     
-    foreign key (id_paciente) references pacientes(id),
+    foreign key (id_paciente) references pacientes(id) on delete cascade,
     foreign key (id_consultorio) references consultorios(id)
 );
 
@@ -78,6 +79,6 @@ values
 ('C1'),
 ('C2');
 
-insert into medicos(RFC,nombreCompleto,cedula,correo,pass,rol,id_consultorio)
+insert into medicos(RFC,nombreCompleto,cedula,correo,hashP,rol,id_consultorio)
 values
-('admin','admin','admin','admin@gmail.com','admin123','1',1);
+('admin','admin','admin','admin@gmail.com','$2b$12$8Yzw7cai8s2naahZINBJUefCpwVguOdOQE2NXVPKQSJ1.ypLnosde','1',1);

@@ -40,6 +40,29 @@
                         });
 
                     </script>
+                {% elif mensaje == 'Error404' %}
+                    
+                    <script>
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "¡Ocurrió un error!",
+                            text: "No se encontro esa url"
+                        });
+
+                    </script>
+
+                {% elif mensaje == 'ErrorMetodo' %}
+                    
+                    <script>
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "¡Ocurrió un error!",
+                            text: "Metodo incorrecto"
+                        });
+
+                    </script>
                 {% endif %}
 
             {%   endfor     %}

@@ -1,53 +1,57 @@
 {% extends 'app.html'%}
 
 {% block sideBar %}
-    <div>
-        <nav class="navbar bg-body-tertiary">
-            <div class="container-fluid d-flex justify-content-between" style="background-color: rgb(60, 141, 188); height:10vh">
-                <div class="">
-
-                    <button class="navbar-toggler mt-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                    <i class="bi bi-list"></i>
-                    </button>
     
-                    <a class="ms-3 text-white fs-5" href="/home" style="text-decoration: none;">MEDICLIT +</a>
-                </div>
+    <nav>
+        <div class="container-fluid d-flex justify-content-between" style="background-color: rgb(60, 141, 188); height:10vh">
+            <div class="mt-4">
 
-                <div class="dropstart">
-                    
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-person-circle dropdown-toggle" viewBox="0 0 16 16" data-bs-toggle="dropdown" aria-expanded="false">
-                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-                    </svg>
+                <button class="navbar-toggler mt-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <i class="bi bi-list"></i>
+                </button>
 
-                    <ul class="dropdown-menu text-center">
-                        <form action="/cerrarSesion" method="POST">
+                <a class="ms-3 text-white fs-5" href="/home" style="text-decoration: none;">MEDICLIT +</a>
+            </div>
 
-                            <li class="dropdown-item d-flex">
-                                <span class="fw-bold me-2">Usuario:</span>
-                                <span>  {{ usuario[1] }}</span>
-                            </li>
-    
-                            <input type="number" hidden value="{{ usuario[0] }}" name="txtIdUsuario">
-    
-                            <li>
-                                <button class="dropdown-item text-danger" type="submit" >Cerrar Sesión</button>
-                            </li>
-                        </form>
-                    </ul>
-                </div>
+            <div class="dropstart mt-2">
+                
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-person-circle dropdown-toggle" viewBox="0 0 16 16" data-bs-toggle="dropdown" aria-expanded="false">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                </svg>
 
-                <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <ul class="dropdown-menu text-center">
+                    <form action="/cerrarSesion" method="POST">
+
+                        <li class="dropdown-item d-flex">
+                            <span class="fw-bold me-2">Usuario:</span>
+                            <span>  {{ usuario[1] }}</span>
+                        </li>
+
+                        <input type="number" hidden value="{{ usuario[0] }}" name="txtIdUsuario">
+
+                        <li>
+                            <button class="dropdown-item text-danger" type="submit" >Cerrar Sesión</button>
+                        </li>
+                    </form>
+                </ul>
+            </div>
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header">
                     <h5 class="offcanvas-title" id="offcanvasNavbarLabel">MEDICLIN</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                        <li class="nav-item mb-3">
-                            <i class="bi bi-person-fill"></i>
-                            <a href="/usu" class="fs-5">Usuarios</a>
-                        </li>
+
+                        {% if usuario[2] == '1' %}
+                            <li class="nav-item mb-3">
+                                <i class="bi bi-person-fill"></i>
+                                <a href="/usu" class="fs-5">Usuarios</a>
+                            </li>
+                        {% endif%}
+
                         <li class="nav-item mb-3">
                             <i class="bi bi-file-earmark-fill"></i>
                             <a href="/ex" class="fs-5">Expedientes</a>
@@ -62,8 +66,7 @@
                         </li> -->
                     </ul>
                 </div>
-                </div>
             </div>
-        </nav>
-    </div>
+        </div>
+    </nav>
 {% endblock %}

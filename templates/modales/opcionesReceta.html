@@ -159,11 +159,13 @@
 <div class="modal fade" id="descargarReceta{{ cita[0]}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Descargar Receta</h1>
-            </div>
-            <div class="modal-body">
 
+            <div class="modal-header flex justify-content-between">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Descargar Receta</h1>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#VerReceta{{ cita[0] }}">Regresar</button>
+            </div>
+
+            <div class="modal-body">
                 <div class="container">
                     <object 
                         class="w-100"
@@ -172,9 +174,6 @@
                         style="height:100vh"
                     ></object>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#VerReceta{{ cita[0] }}">Regresar</button>
             </div>
         </div>
     </div>
